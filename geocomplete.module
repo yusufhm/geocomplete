@@ -1,0 +1,19 @@
+<?php
+
+/**
+ *  Implements hook_ctools_plugin_directory().
+ */
+function geocomplete_ctools_plugin_directory($owner, $plugin_type) {
+  if (in_array($owner, array('ctools', 'search_api_location'))) {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+/**
+ *  Implements hook_form_FORM_ID_alter().
+ */
+function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
+//  drupal_add_js('http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places', 'external');
+//  drupal_add_js(drupal_get_path('module', 'geocomplete') .'/jquery.geocomplete.js', 'file');
+//  drupal_add_js(drupal_get_path('module', 'geocomplete') .'/geocomplete.js', 'file');
+}
