@@ -13,7 +13,28 @@ function geocomplete_ctools_plugin_directory($owner, $plugin_type) {
  *  Implements hook_form_FORM_ID_alter().
  */
 function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
-//  drupal_add_js('http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places', 'external');
-//  drupal_add_js(drupal_get_path('module', 'geocomplete') .'/jquery.geocomplete.js', 'file');
-//  drupal_add_js(drupal_get_path('module', 'geocomplete') .'/geocomplete.js', 'file');
+  // if the filter being used in this exposed form is
+  // the plugin we define in our module,
+  //  - add two hidden fields for storing the lat & long
+  //  - add our custom js and pass the field name as settings
+  foreach ($form_state['view']->filter as $filter_name => $filter_obj) {
+    if ($filter_obj->options['plugin'] == 'geocomplete') {
+      // add fields
+      $form['lat'] = array('#type' => 'hidden');
+      $form['lng'] = array('#type' => 'hidden');
+
+      // add js
+      $form_field_geocomplete = $filter_obj->options['expose']['identifier'];
+      $form_field_submit = $form['submit']['#id'];
+      drupal_add_js('http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places', 'external');
+      drupal_add_js(drupal_get_path('module', 'geocomplete') .'/jquery.geocomplete.js', 'file');
+      drupal_add_js(array('geocomplete' => array(
+        'form_field_geocomplete' => 'edit-' . $form_field_geocomplete,
+        'form_field_submit' => 'edit-' . $form_field_submit
+      ), ), 'setting');
+      drupal_add_js(drupal_get_path('module', 'geocomplete') .'/geocomplete.js', 'file');
+
+      break;
+    }
+  }
 }

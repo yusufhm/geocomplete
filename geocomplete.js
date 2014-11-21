@@ -11,13 +11,15 @@
 
   Drupal.behaviors.geo = {
     attach: function (context, settings) {
-      $("#edit-field-location-latlon").geocomplete();
-      //$.fn.geocomplete("#edit-search-api-views-fulltext");
+
+      var $form_field_geocomplete = $("#" + Drupal.settings.geocomplete.form_field_geocomplete),
+          $form_field_submit      = $("#" + Drupal.settings.geocomplete.form_field_submit);
+
+      $form_field_geocomplete.geocomplete({ details: "form" });
 
       // Trigger geocoding request.
-      $("#edit-submit-location-search-kickstart").click(function(e){
-        e.preventDefault();
-        $("#edit-field-location-latlon").trigger("geocode");
+      $form_field_submit.click(function(e){
+        $form_field_geocomplete.trigger("geocode");
       });
     }
   };
