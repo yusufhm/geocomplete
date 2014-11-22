@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Plugin to provide raw location input.
+ * Plugin to provide Geocomplete location input.
  */
 
 /**
@@ -11,8 +11,8 @@
  */
 $plugin = array(
   'title' => t('Geocomplete'),
-  'description' => t(''),
-  'input callback' => 'geocomplete_location_input_get',
+  'description' => t('Provides input with client-side autocomplete geocoding.'),
+  'input callback' => 'geocomplete_location_input_geocomplete',
 );
 
 /**
@@ -26,15 +26,15 @@ $plugin = array(
  * @return
  *   $input if it is a valid location string. NULL otherwise.
  */
-function geocomplete_location_input_get($input, array $options) {
-  if (empty($_GET['lat'])) $_GET['lat'] = '0.1';
-  if (empty($_GET['lng'])) $_GET['lng'] = '0.1';
-  $lat = $_GET['lat'];
-  $lon = $_GET['lng'];
-  $coordinates = array(
-    'latlon' => $lat . ',' . $lon,
-    'lat' => $lat,
-    'lon' => $lon
-  );
-  return isset($coordinates['latlon']) ? $coordinates['latlon'] : NULL;
+function geocomplete_location_input_geocomplete($input, array $options) {
+  $latlon = NULL;
+  $view = views_get_current_view();
+  $data = $view->exposed_data;
+  foreach ($data as $key => $value) {
+    if ($value == $input && isset($data[$key . '_lat']) && isset($data[$key . '_lng'])) {
+      $latlon = $data[$key . '_lat'] . ',' . $data[$key . '_lng'];
+      break;
+    }
+  }
+  return $latlon;
 }

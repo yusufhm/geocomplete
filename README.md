@@ -1,4 +1,4 @@
-geocomplete
+Geocomplete
 ===========
 
 Drupal module using the jquery.geocomplete plugin
