@@ -28,14 +28,24 @@ $plugin = array(
  *   $input if it is a valid location string. NULL otherwise.
  */
 function geocomplete_location_input_geocomplete($input, array $options) {
+
+  if (empty($input)) {
+    return NULL;
+  }
+
   $latlon = NULL;
   $view = views_get_current_view();
   $data = $view->exposed_data;
   foreach ($data as $key => $value) {
-    if ($value == $input && isset($data[$key . '_lat']) && isset($data[$key . '_lng'])) {
+    if ($value == $input && !empty($data[$key . '_lat']) && !empty($data[$key . '_lng'])) {
       $latlon = $data[$key . '_lat'] . ',' . $data[$key . '_lng'];
       break;
     }
+  }
+
+  if (empty($latlon) && !empty($options['fallback_container']['fallback']['geocoder_handler'])
+    && $options['fallback_container']['fallback']['geocoder_handler'] != '_node') {
+    $latlon = search_api_location_input_geocoder($input, $options['fallback_container']['fallback']);
   }
   return $latlon;
 }
@@ -56,8 +66,38 @@ function geocomplete_location_input_geocomplete_form(array &$form_state, array $
     'additional_types_container' => array(
       'additional_types' => array(),
     ),
+    'fallback_container' => array(
+      'fallback' => array()
+    ),
   );
 
+  // Fallback behavior.
+  $form['fallback_container'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#title' => t('Fallback'),
+    '#description' => t('<p>Fallback option is used for server-side geocoding in the case if coordinates are not submitted (e.g. if a user has javascript disabled).</p>'),
+  );
+
+  if (module_exists('geocoder')) {
+    $geocoder_form_state = isset($form_state['values']['fallback_container']['fallback'])
+      ? array(
+        'values' => isset($form_state['values']['fallback_container']['fallback']),
+      )
+      : array();
+    $form['fallback_container']['fallback'] = search_api_location_input_geocoder_form($geocoder_form_state, $options['fallback_container']['fallback']);
+    $form['fallback_container']['fallback']['geocoder_handler']['#options'] = array_merge(array(
+        '_none' => t('- None -'),
+    ), $form['fallback_container']['fallback']['geocoder_handler']['#options']);
+  }
+  else {
+    $form['fallback_container']['no_geocoder'] = array(
+      '#markup' => t('<p>You need to enable <a href="https://www.drupal.org/project/geocoder">geocoder</a> module to enable fallback option.</p>'),
+    );
+  }
+
+  // Additional types.
   $types = array(
     'street_address',
     'route',
@@ -101,11 +141,11 @@ function geocomplete_location_input_geocomplete_form(array &$form_state, array $
     '#collapsed' => TRUE,
     '#title' => t('Additional info'),
     '#description' => t('<p>Geocomplete can collect additional info about the location besides latitude and longitude, like country or state.</p><p>The module does not use that info itself, but you may use it in other modules.</p>'),
-  );
-  $form['additional_types_container']['additional_types'] = array(
-    '#type' => 'checkboxes',
-    '#options' => $types_options,
-    '#default_value' => $options['additional_types_container']['additional_types'],
+    'additional_types' => array(
+      '#type' => 'checkboxes',
+      '#options' => $types_options,
+      '#default_value' => $options['additional_types_container']['additional_types'],
+    )
   );
 
   return $form;

@@ -61,20 +61,19 @@ function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_i
       }
     }
   }
-
-  if ($flag) {
+  if ($flag && empty($form_state['view']->live_preview)) {
     // Geocomplete field is used, add js.
     $form['#attached']['js'][] = array(
       'data' => 'http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places',
-      'type' => 'external'
+      'type' => 'external',
     );
     $form['#attached']['js'][] = array(
       'data' => libraries_get_path('geocomplete') . '/jquery.geocomplete.js',
-      'type' => 'file'
+      'type' => 'file',
     );
     $form['#attached']['js'][] = array(
       'data' => drupal_get_path('module', 'geocomplete') . '/geocomplete.js',
-      'type' => 'file'
+      'type' => 'file',
     );
   }
 
