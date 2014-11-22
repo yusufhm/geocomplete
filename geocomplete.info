@@ -1,7 +1,7 @@
 name = Geocomplete
-description = "A module providing geocomplete integration"
+description = "A module providing Geocomplete jQuery plugin integration with Search API Location Views."
 package = Geolocation
 core = 7.x
 
 dependencies[] = libraries
-dependencies[] = search_api_location_views
+dependencies[] = search_api_location
