@@ -3,5 +3,5 @@ description = "A module providing geocomplete integration"
 package = Geolocation
 core = 7.x
 
-dependencies[] = search_api_solr
+dependencies[] = libraries
 dependencies[] = search_api_location
