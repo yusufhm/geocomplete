@@ -18,7 +18,7 @@ function geocomplete_ctools_plugin_directory($owner, $plugin_type) {
  */
 function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
   $flag = FALSE;
-  foreach ($form_state['view']->filter as $filter_name => $filter_obj) {
+  foreach ($form_state['view']->filter as $filter_obj) {
     if ($filter_obj->options['plugin'] == 'geocomplete') {
 
       // Filter being used in this exposed form is the plugin we define in our module.
@@ -47,6 +47,18 @@ function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_i
         ),
       );
 
+      // Additional types to collect.
+      $additional_types = array_filter($filter_obj->options['plugin-geocomplete']['additional_types_container']['additional_types']);
+      if (!empty($additional_types)) {
+        foreach ($additional_types as $type => $type_flag) {
+          $form[$filter_obj->field . '_geofield'][$filter_obj->field . '_' . $type] = array(
+            '#type' => 'hidden',
+            '#attributes' => array(
+              'data-geocomplete-type' => $type,
+            ),
+          );
+        }
+      }
     }
   }
 
