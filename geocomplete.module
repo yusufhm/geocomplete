@@ -68,7 +68,9 @@ function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_i
       'type' => 'external',
     );
     $form['#attached']['js'][] = array(
-      'data' => libraries_get_path('geocomplete') . '/jquery.geocomplete.js',
+      'data' => variable_get('geocomplete_debug', FALSE) // Use minified version by default.
+          ? libraries_get_path('geocomplete') . '/jquery.geocomplete.js'
+          : libraries_get_path('geocomplete') . '/jquery.geocomplete.min.js',
       'type' => 'file',
     );
     $form['#attached']['js'][] = array(
