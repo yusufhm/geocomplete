@@ -34,6 +34,7 @@ function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_i
 
       if (!empty($filter_obj->options['plugin-geocomplete']['html_geolocation'])) {
         $form[$field]['#attributes']['class'][] = 'geocomplete-geolocation';
+        $form[$field]['#suffix'] = '<div class="geocomplete-geolocation-msg"></div>';
 
         $form[$field]['#attached']['js'][] = array(
           'data' => array(
