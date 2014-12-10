@@ -44,7 +44,8 @@ function geocomplete_location_input_geocomplete($input, array $options) {
   }
 
   if (empty($latlon) && !empty($options['fallback_container']['fallback']['geocoder_handler'])
-    && $options['fallback_container']['fallback']['geocoder_handler'] != '_node') {
+    && $options['fallback_container']['fallback']['geocoder_handler'] != '_node'
+  ) {
     $latlon = search_api_location_input_geocoder($input, $options['fallback_container']['fallback']);
   }
   return $latlon;
@@ -88,7 +89,7 @@ function geocomplete_location_input_geocomplete_form(array &$form_state, array $
       : array();
     $form['fallback_container']['fallback'] = search_api_location_input_geocoder_form($geocoder_form_state, $options['fallback_container']['fallback']);
     $form['fallback_container']['fallback']['geocoder_handler']['#options'] = array_merge(array(
-        '_none' => t('- None -'),
+      '_none' => t('- None -'),
     ), $form['fallback_container']['fallback']['geocoder_handler']['#options']);
   }
   else {
@@ -146,6 +147,45 @@ function geocomplete_location_input_geocomplete_form(array &$form_state, array $
       '#options' => $types_options,
       '#default_value' => $options['additional_types_container']['additional_types'],
     )
+  );
+
+  $form['html_geolocation'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use HTML5 geolocation'),
+    '#description' => t('If the HTML5 geolocation is enabled, a link to use user geolocation will be displayed.'),
+    '#default_value' => isset($options['html_geolocation']) ? $options['html_geolocation'] : FALSE,
+  );
+
+  $form['html_geolocation_container'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+    '#title' => t('HTML5 geolocation settings'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="options[plugin-geocomplete][html_geolocation]"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
+
+  $form['html_geolocation_container']['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('HTML5 geolocation link title'),
+    '#default_value' => isset($options['html_geolocation_container']['text']) ? $options['html_geolocation_container']['text'] : t('get my location'),
+  );
+
+  $form['html_geolocation_container']['success'] = array(
+    '#type' => 'textfield',
+    '#title' => t('HTML5 geolocation success message'),
+    '#description' => t('This message will be displayed near the filter input when the position is retrieved. You can use [lat] and [lng] tokens.'),
+    '#default_value' => isset($options['html_geolocation_container']['success']) ? $options['html_geolocation_container']['success'] : t('Your position is [lat], [lng]'),
+  );
+
+  $form['html_geolocation_container']['error'] = array(
+    '#type' => 'textfield',
+    '#title' => t('HTML5 geolocation error message'),
+    '#description' => t('This message will be displayed near the filter input when the position could not be retrieved.'),
+    '#default_value' => isset($options['html_geolocation_container']['error']) ? $options['html_geolocation_container']['error'] : t('We could not retrieve your position'),
   );
 
   return $form;

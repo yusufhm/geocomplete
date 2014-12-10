@@ -18,6 +18,7 @@ function geocomplete_ctools_plugin_directory($owner, $plugin_type) {
  */
 function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
   $flag = FALSE;
+  $settings = array();
   foreach ($form_state['view']->filter as $filter_obj) {
     if ($filter_obj->options['plugin'] == 'geocomplete') {
 
@@ -27,6 +28,34 @@ function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_i
       // Add specific class to each geocomplete input.
       $field = $filter_obj->options['expose']['identifier'];
       $form[$field]['#attributes']['class'][] = 'geocomplete-input';
+
+      $hash = drupal_hash_base64($form_id . ' ' . $field);
+      $form[$field]['#attributes']['data-geocomplete-hash'] = $hash;
+
+      if (!empty($filter_obj->options['plugin-geocomplete']['html_geolocation'])) {
+        $form[$field]['#attributes']['class'][] = 'geocomplete-geolocation';
+
+        $form[$field]['#attached']['js'][] = array(
+          'data' => array(
+            'geocomplete' => array(
+              $hash => array(
+                'geolocation' => array(
+                  'title' => isset($filter_obj->options['plugin-geocomplete']['html_geolocation_container']['text'])
+                      ? $filter_obj->options['plugin-geocomplete']['html_geolocation_container']['text']
+                      : t('get my location'),
+                  'success' => isset($filter_obj->options['plugin-geocomplete']['html_geolocation_container']['success'])
+                      ? $filter_obj->options['plugin-geocomplete']['html_geolocation_container']['success']
+                      : t('Your position is [lat], [lng]'),
+                  'error' => isset($filter_obj->options['plugin-geocomplete']['html_geolocation_container']['error'])
+                      ? $filter_obj->options['plugin-geocomplete']['html_geolocation_container']['error']
+                      : t('We could not retrieve your position'),
+                ),
+              ),
+            ),
+          ),
+          'type' => 'setting',
+        );
+      }
 
       // Add hidden fields for storing lat, lon, etc.
       $form[$field . '_geofield'] = array(
