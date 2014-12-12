@@ -50,6 +50,9 @@ function geocomplete_form_views_exposed_form_alter(&$form, &$form_state, $form_i
                   'error' => isset($filter_obj->options['plugin-geocomplete']['html_geolocation_container']['error'])
                       ? $filter_obj->options['plugin-geocomplete']['html_geolocation_container']['error']
                       : t('We could not retrieve your position'),
+                  'reverse' => isset($filter_obj->options['plugin-geocomplete']['html_geolocation_container']['reverse'])
+                      ? $filter_obj->options['plugin-geocomplete']['html_geolocation_container']['reverse']
+                      : FALSE,
                 ),
               ),
             ),

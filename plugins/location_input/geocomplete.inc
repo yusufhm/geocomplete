@@ -188,5 +188,13 @@ function geocomplete_location_input_geocomplete_form(array &$form_state, array $
     '#default_value' => isset($options['html_geolocation_container']['error']) ? $options['html_geolocation_container']['error'] : t('We could not retrieve your position'),
   );
 
+
+  $form['html_geolocation_container']['reverse'] = array(
+    '#type' => 'checkbox',
+    '#description' => t('If the checkbox is checked, reverse geocoding will be executed to retrieve respective address, which will populate the input field.'),
+    '#title' => t('Populate input field'),
+    '#default_value' => isset($options['html_geolocation_container']['reverse']) ? $options['html_geolocation_container']['reverse'] : FALSE,
+  );
+
   return $form;
 }
